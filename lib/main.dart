@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
-void main() => runApp(new MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
   @override
@@ -27,7 +27,7 @@ class MyAppState extends State<MyApp> {
     return MaterialApp(
         // TODO: (not all material) pull into above widget.
         title: 'StackOverflow Viewer',
-        theme: new ThemeData(
+        theme: ThemeData(
           primarySwatch: Colors.orange,
         ),
         home: Scaffold(
@@ -69,18 +69,18 @@ class CustomAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
-    return new Container(
-      padding: new EdgeInsets.only(top: statusBarHeight),
+    return Container(
+      padding: EdgeInsets.only(top: statusBarHeight),
       height: statusBarHeight * 4,
-      child: new Center(
-        child: new Text(
+      child: Center(
+        child: Text(
           title,
           style: const TextStyle(
               color: Colors.white, fontFamily: 'Kranky', fontSize: 36.0),
         ),
       ),
-      decoration: new BoxDecoration(
-        gradient: new LinearGradient(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
           colors: [
             Colors.deepOrange,
             Colors.orangeAccent,
@@ -107,7 +107,7 @@ class StackOverflowContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new StreamBuilder(
+    return StreamBuilder(
         stream: questionStream,
         builder: (BuildContext context,
             AsyncSnapshot<List<StackOverflowInfo>> snapshot) {
@@ -116,14 +116,14 @@ class StackOverflowContent extends StatelessWidget {
           else if (snapshot.connectionState == ConnectionState.waiting) {
             return Text('Receiving questions...');
           }
-          return new Expanded(
+          return Expanded(
               child: ListView(
                   children: snapshot.data
-                      .map<Widget>((info) => new Card(
+                      .map<Widget>((info) => Card(
                             child: ListTile(
                                 title: Text(info.title),
-                                leading: new CircleAvatar(
-                                  child: new Text(info.viewCount.toString()),
+                                leading: CircleAvatar(
+                                  child: Text(info.viewCount.toString()),
                                 )),
                           ))
                       .toList()));
@@ -141,12 +141,12 @@ class PlatformButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
-      return new CupertinoButton(
+      return CupertinoButton(
         child: child,
         onPressed: onPressed,
       );
     } else {
-      return new FloatingActionButton(
+      return FloatingActionButton(
         child: icon,
         onPressed: onPressed,
       );
