@@ -114,7 +114,7 @@ class StackOverflowContent extends StatelessWidget {
           if (snapshot.hasError)
             return Text('Error ${snapshot.error}');
           else if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text('Receiving questions...');
+            return const Text('Receiving questions...');
           }
           return Expanded(
               child: ListView(
