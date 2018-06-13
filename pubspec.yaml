@@ -57,3 +57,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.io/custom-fonts/#from-packages
+  fonts:
+    - family: Kranky
+      fonts:
+        - asset: assets/Kranky-Regular.ttf

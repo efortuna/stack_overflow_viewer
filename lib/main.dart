@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
   final url =
       'https://api.stackexchange.com/2.2/questions?order=desc&sort=activity&tagged=flutter&site=stackoverflow';
-  final controller = StreamController<List<String>>();
+  final controller = StreamController<List<StackOverflowInfo>>();
 
   @override
   void initState() {
@@ -28,23 +28,30 @@ class MyAppState extends State<MyApp> {
         // TODO: (not all material) pull into above widget.
         title: 'StackOverflow Viewer',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.orange,
         ),
         home: Scaffold(
-            body: Column(children: [
-          StackOverflowContent(controller.stream),
-          PlatformAdaptiveButton(
-              child: const Text('Refresh Questions'),
-              icon: const Icon(Icons.refresh),
-              onPressed: refreshQuestions)
-        ])));
+            body: Container(
+          color: const Color(0xffc0c0c0),
+          child: Column(children: [
+            CustomAppBar('Stack Overflow TODO'),
+            StackOverflowContent(controller.stream),
+            PlatformButton(
+                child: Text('Refresh'),
+                icon: Icon(Icons.refresh),
+                onPressed: refreshQuestions)
+          ]),
+        )));
   }
 
   void refreshQuestions() async {
     var result = await http.get(url);
     Map decoded = json.decode(result.body);
     List items = decoded['items'];
-    controller.add(items.map<String>((item) => item['title']).toList());
+    controller.add(items
+        .where((item) => !item['is_answered'])
+        .map<StackOverflowInfo>((item) => StackOverflowInfo.fromJson(item))
+        .toList());
   }
 
   @override
@@ -54,8 +61,47 @@ class MyAppState extends State<MyApp> {
   }
 }
 
+class CustomAppBar extends StatelessWidget {
+  final String title;
+  CustomAppBar(this.title);
+
+  @override
+  Widget build(BuildContext context) {
+    final double statusBarHeight = MediaQuery.of(context).padding.top;
+
+    return Container(
+      padding: EdgeInsets.only(top: statusBarHeight),
+      height: statusBarHeight * 4,
+      child: Center(
+        child: Text(
+          title,
+          style: const TextStyle(
+              color: Colors.white, fontFamily: 'Kranky', fontSize: 36.0),
+        ),
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.deepOrange,
+            Colors.orangeAccent,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class StackOverflowInfo {
+  String title;
+  int viewCount;
+  StackOverflowInfo.fromJson(Map json) {
+    title = json['title'];
+    viewCount = json['view_count'];
+  }
+}
+
 class StackOverflowContent extends StatelessWidget {
-  final Stream<List<String>> questionStream;
+  final Stream<List<StackOverflowInfo>> questionStream;
 
   StackOverflowContent(this.questionStream);
 
@@ -63,7 +109,8 @@ class StackOverflowContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: questionStream,
-        builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+        builder: (BuildContext context,
+            AsyncSnapshot<List<StackOverflowInfo>> snapshot) {
           if (snapshot.hasError)
             return Text('Error ${snapshot.error}');
           else if (snapshot.connectionState == ConnectionState.waiting) {
@@ -72,29 +119,20 @@ class StackOverflowContent extends StatelessWidget {
           return Expanded(
               child: ListView(
                   children: snapshot.data
-                      .map<Widget>(
-                          (question) => ListTile(title: Text(question)))
+                      .map<Widget>((info) => Card(
+                            child: ListTile(
+                                title: Text(info.title),
+                                leading: CircleAvatar(
+                                  child: Text(info.viewCount.toString()),
+                                )),
+                          ))
                       .toList()));
         });
   }
 }
 
-/*class StackOverflow extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(future: http.get(url),
-      builder:
-    );
-    return Scaffold(
-      appBar: PlatformAdaptiveAppBar(),
-      body:
-    );
-  }
-
-}*/
-
-class PlatformAdaptiveButton extends StatelessWidget {
-  PlatformAdaptiveButton({Key key, this.child, this.icon, this.onPressed})
+class PlatformButton extends StatelessWidget {
+  PlatformButton({Key key, this.child, this.icon, this.onPressed})
       : super(key: key);
   final Widget child;
   final Widget icon;
@@ -108,8 +146,8 @@ class PlatformAdaptiveButton extends StatelessWidget {
         onPressed: onPressed,
       );
     } else {
-      return IconButton(
-        icon: icon,
+      return FloatingActionButton(
+        child: icon,
         onPressed: onPressed,
       );
     }
