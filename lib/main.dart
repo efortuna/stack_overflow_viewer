@@ -37,8 +37,8 @@ class MyAppState extends State<MyApp> {
             CustomAppBar('Stack Overflow TODO'),
             StackOverflowContent(controller.stream),
             PlatformButton(
-                child: Text('Refresh'),
-                icon: Icon(Icons.refresh),
+                child: const Text('Refresh'),
+                icon: const Icon(Icons.refresh),
                 onPressed: refreshQuestions)
           ]),
         )));
