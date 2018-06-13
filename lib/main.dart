@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
-void main() => runApp(new MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
   @override
@@ -24,17 +24,18 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp( // TODO: (not all material) pull into above widget.
+    return MaterialApp(
+        // TODO: (not all material) pull into above widget.
         title: 'StackOverflow Viewer',
-        theme: new ThemeData(
+        theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
         home: Scaffold(
             body: Column(children: [
           StackOverflowContent(controller.stream),
           PlatformAdaptiveButton(
-              child: Text('Refresh Questions'),
-              icon: Icon(Icons.refresh),
+              child: const Text('Refresh Questions'),
+              icon: const Icon(Icons.refresh),
               onPressed: refreshQuestions)
         ])));
   }
@@ -60,15 +61,15 @@ class StackOverflowContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new StreamBuilder(
+    return StreamBuilder(
         stream: questionStream,
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
           if (snapshot.hasError)
             return Text('Error ${snapshot.error}');
           else if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text('Receiving questions...');
+            return const Text('Receiving questions...');
           }
-          return new Expanded(
+          return Expanded(
               child: ListView(
                   children: snapshot.data
                       .map<Widget>(
@@ -81,10 +82,10 @@ class StackOverflowContent extends StatelessWidget {
 /*class StackOverflow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new FutureBuilder(future: http.get(url),
+    return FutureBuilder(future: http.get(url),
       builder:
     );
-    return new Scaffold(
+    return Scaffold(
       appBar: PlatformAdaptiveAppBar(),
       body:
     );
@@ -102,16 +103,15 @@ class PlatformAdaptiveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (Theme.of(context).platform == TargetPlatform.iOS) {
-      return new CupertinoButton(
+      return CupertinoButton(
         child: child,
         onPressed: onPressed,
       );
     } else {
-      return new IconButton(
+      return IconButton(
         icon: icon,
         onPressed: onPressed,
       );
     }
   }
 }
-
